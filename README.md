@@ -10,6 +10,7 @@
 
 ```bash
 git clone https://github.com/MnTeriri/EFMSR.git
+cd EFMSR
 conda create -n EFMSR python=3.12
 conda activate EFMSR
 pip3 install torch==2.8.0 torchvision==0.23.0 --index-url https://download.pytorch.org/whl/cu129
@@ -23,18 +24,33 @@ pip install -e . --no-build-isolation
 
 - Run the following scripts. The training configuration is in `options/train/`.
 
+- The training experiment is in `experiments/`.
+
+- For multiple GPUs
   ```bash
-  # EFMSR 
+  # EFMSR 8 GPUs
   torchrun --nproc-per-node=8 --master-port=4321 basicsr/train.py -opt options/train/train_EFMSR_x2.yml --launcher pytorch
   torchrun --nproc-per-node=8 --master-port=4321 basicsr/train.py -opt options/train/train_EFMSR_x3.yml --launcher pytorch
   torchrun --nproc-per-node=8 --master-port=4321 basicsr/train.py -opt options/train/train_EFMSR_x4.yml --launcher pytorch
   
-  # EFMSR-light
+  # EFMSR-light 8 GPUs
   torchrun --nproc-per-node=8 --master-port=4321 basicsr/train.py -opt options/train/train_EFMSR_Light_x2.yml --launcher pytorch
   torchrun --nproc-per-node=8 --master-port=4321 basicsr/train.py -opt options/train/train_EFMSR_Light_x3.yml --launcher pytorch
   torchrun --nproc-per-node=8 --master-port=4321 basicsr/train.py -opt options/train/train_EFMSR_Light_x4.yml --launcher pytorch
   ```
-- The training experiment is in `experiments/`.
+  
+- For single GPU
+  ```bash
+  # EFMSR single GPU
+  torchrun --nproc-per-node=1 --master-port=4321 basicsr/train.py -opt options/train/train_EFMSR_x2.yml --launcher pytorch
+  torchrun --nproc-per-node=1 --master-port=4321 basicsr/train.py -opt options/train/train_EFMSR_x3.yml --launcher pytorch
+  torchrun --nproc-per-node=1 --master-port=4321 basicsr/train.py -opt options/train/train_EFMSR_x4.yml --launcher pytorch
+  
+  # EFMSR-light single GPU
+  torchrun --nproc-per-node=1 --master-port=4321 basicsr/train.py -opt options/train/train_EFMSR_Light_x2.yml --launcher pytorch
+  torchrun --nproc-per-node=1 --master-port=4321 basicsr/train.py -opt options/train/train_EFMSR_Light_x3.yml --launcher pytorch
+  torchrun --nproc-per-node=1 --master-port=4321 basicsr/train.py -opt options/train/train_EFMSR_Light_x4.yml --launcher pytorch
+  ```
 
 ## Testing
 

@@ -24,7 +24,7 @@ datasets:
     # data loader
     use_shuffle: True
     num_worker_per_gpu: 18
-    batch_size_per_gpu: 2
+    batch_size_per_gpu: 4
     dataset_enlarge_ratio: 100
     prefetch_mode: cuda
     pin_memory: true
