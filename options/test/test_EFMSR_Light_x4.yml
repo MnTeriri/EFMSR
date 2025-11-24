@@ -46,7 +46,7 @@ datasets:
     name: Manga109
     type: PairedImageDataset
     dataroot_gt: ../datasets/benchmark/Manga109/HR
-    dataroot_lq: ../datasets/benchmark/Manga109/LR_bicubic/X3
+    dataroot_lq: ../datasets/benchmark/Manga109/LR_bicubic/X4
     filename_tmpl: '{}_LRBI_x4'
     io_backend:
       type: disk

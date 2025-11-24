@@ -907,31 +907,31 @@ class FMBlock(nn.Module):
             x: Tensor,
             x_size: tuple[int, int],
             params: dict[str, Tensor],
-            pfa_list: list,
-            fba_list: list,
+            fdwa_list: list,
+            mepa_list: list,
     ) -> tuple[Tensor, list, list]:
         """
         Args:
             x: Tensor of shape (B, H*W, C)
             x_size: 张量 x 的 H 和 W
             params: SW-MSA参数 {'attn_mask':注意力掩码,'rpi_sa':相对位置索引}
-            pfa_list: PFT共享Attention参数
-            fba_list: FB共享Attention参数
+            fdwa_list: FDWA共享Attention参数
+            mepa_list: MEPA共享Attention参数
 
         Returns:
-            Tensor of shape (B, H*W, C)
+            list[Tensor (B, H*W, C), fdwa_list, mepa_list]
         """
         # Part 1: FourierWindowAttnBlock
         res = x
-        x, fba_list = self.fdwa_block(x, fba_list, x_size, params)
+        x, fdwa_list = self.fdwa_block(x, fdwa_list, x_size, params)
         x = x + (res * self.scale1)
 
         # Part 2: PFTransformerLayer
         res = x
-        x, pfa_list = self.mepa_block(x, pfa_list, x_size, params)
+        x, mepa_list = self.mepa_block(x, mepa_list, x_size, params)
         x = x + (res * self.scale2)
 
-        return x, pfa_list, fba_list
+        return x, fdwa_list, mepa_list
 
 
 class EFMGroup(nn.Module):
@@ -1020,28 +1020,28 @@ class EFMGroup(nn.Module):
             x: Tensor,
             x_size: tuple[int, int],
             params: dict[str, Tensor],
-            pfa_list: list,
-            fba_list: list
+            fdwa_list: list,
+            mepa_list: list
     ) -> tuple[Tensor, list, list]:
         """
         Args:
             x: Tensor of shape (B, H*W, C)
             x_size: 张量 x 的 H 和 W
             params: SW-MSA参数 {'attn_mask':注意力掩码,'rpi_sa':相对位置索引}
-            pfa_list: 共享Attention参数
-            fba_list: FB共享Attention参数
+            fdwa_list: FDWA共享Attention参数
+            mepa_list: MEPA共享Attention参数
 
         Returns:
             Tensor of shape (B, H*W, C)
         """
         res = x
         for block in self.blocks:
-            x, pfa_list, fba_list = block(x, x_size, params, pfa_list, fba_list)
+            x, fdwa_list, mepa_list = block(x, x_size, params, fdwa_list, mepa_list)
         x = self.patch_unembed(x, x_size)
         x = self.conv(x)
         x = self.patch_embed(x)
         x = x + res
-        return x, pfa_list, fba_list
+        return x, fdwa_list, mepa_list
 
 
 @ARCH_REGISTRY.register()
@@ -1271,19 +1271,19 @@ class EFMSR(nn.Module):
         """
         x_size = (x.shape[2], x.shape[3])  # 保存原图像[H, W]
 
-        # Define progressive focusing attention (PFA) values and their corresponding indices
-        pfa_values = [None, None]
-        pfa_indices = [None, None]
-        pfa_list = [pfa_values, pfa_indices]
+        # fdwa
+        fdwa_values = [None, None]
+        fdwa_indices = [None, None]
+        fdwa_list = [fdwa_values, fdwa_indices]
 
-        # 运用到FB上
-        fba_values = [None, None]
-        fba_indices = [None, None]
-        fba_list = [fba_values, fba_indices]
+        # mepa
+        mepa_values = [None, None]
+        mepa_indices = [None, None]
+        mepa_list = [mepa_values, mepa_indices]
 
         x = self.patch_embed(x)  # [B, C, H, W] → [B, H*W, C]
         for group in self.groups:
-            x, pfa_list, fba_list = group(x, x_size, params, pfa_list, fba_list)
+            x, fdwa_list, mepa_list = group(x, x_size, params, fdwa_list, mepa_list)
         x = self.norm(x)
         x = self.patch_unembed(x, x_size)  # [B, H*W, C] → [B, C, H, W]
         return x
