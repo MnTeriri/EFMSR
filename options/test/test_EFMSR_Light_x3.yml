@@ -80,7 +80,7 @@ network_g:
 path:
   pretrain_network_g: experiments/pretrained_models/EFMSR_Light_x3.pth
   param_key_g: params_ema # params or params_ema
-  strict_load_g: true
+  strict_load_g: false
 
 # validation settings
 val:
