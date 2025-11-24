@@ -1,0 +1,14 @@
+tqdm
+pyyaml
+numpy
+opencv-python
+requests
+einops
+timm
+lmdb
+seaborn
+ultralytics-thop
+fvcore
+tb-nightly
+torch==2.8.0+cu129
+torchvision

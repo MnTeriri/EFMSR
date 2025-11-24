@@ -1,0 +1,98 @@
+# general settings
+name: Test_EFMSR_Light_x2
+model_type: EFMSRModel
+scale: 2
+num_gpu: auto
+manual_seed: 10
+
+datasets:
+  test_1: # the 1st test dataset
+    name: Set5
+    type: PairedImageDataset
+    dataroot_gt: ../datasets/benchmark/Set5/HR
+    dataroot_lq: ../datasets/benchmark/Set5/LR_bicubic/X2
+    filename_tmpl: '{}x2'
+    io_backend:
+      type: disk
+  ##
+  test_2: # the 2nd test dataset
+    name: Set14
+    type: PairedImageDataset
+    dataroot_gt: ../datasets/benchmark/Set14/HR
+    dataroot_lq: ../datasets/benchmark/Set14/LR_bicubic/X2
+    filename_tmpl: '{}x2'
+    io_backend:
+      type: disk
+
+  test_3: # the 3rd test dataset
+    name: B100
+    type: PairedImageDataset
+    dataroot_gt: ../datasets/benchmark/B100/HR
+    dataroot_lq: ../datasets/benchmark/B100/LR_bicubic/X2
+    filename_tmpl: '{}x2'
+    io_backend:
+      type: disk
+
+  test_4: # the 4th test dataset
+    name: Urban100
+    type: PairedImageDataset
+    dataroot_gt: ../datasets/benchmark/Urban100/HR
+    dataroot_lq: ../datasets/benchmark/Urban100/LR_bicubic/X2
+    filename_tmpl: '{}x2'
+    io_backend:
+      type: disk
+
+  test_5: # the 5th test dataset
+    name: Manga109
+    type: PairedImageDataset
+    dataroot_gt: ../datasets/benchmark/Manga109/HR
+    dataroot_lq: ../datasets/benchmark/Manga109/LR_bicubic/X2
+    filename_tmpl: '{}_LRBI_x2'
+    io_backend:
+      type: disk
+
+# network structures
+network_g:
+  type: EFMSR
+  upscale: 2
+  img_size: 64
+  img_range: 1.
+  in_chans: 3
+  embed_dim: 48
+  depths: [ 1, 2, 3, 3, 3]
+  resi_connection: '1conv'
+  upsampler: 'pixel_shuffle_direct'
+  window_size: 16
+  num_heads: [ 4, 4, 4, 4, 4]
+  num_topk: [
+    1024,
+    256, 256,
+    128, 128, 128,
+    64, 64, 64,
+    32, 32, 32,
+  ]
+  mlp_ratio: 2.
+  conv_ffn_kernel_size: 7
+  compress_ratio: 12
+  squeeze_factor: 30
+
+# path
+path:
+  pretrain_network_g: experiments/pretrained_models/EFMSR_Light_x2.pth
+  param_key_g: params_ema # params or params_ema
+  strict_load_g: true
+
+# validation settings
+val:
+  save_img: true
+  suffix: ~  # add suffix to saved images, if None, use exp name
+
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 2
+      test_y_channel: true
+    ssim:
+      type: calculate_ssim
+      crop_border: 2
+      test_y_channel: true
