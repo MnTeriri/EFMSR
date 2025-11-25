@@ -536,26 +536,15 @@ class MultiScaleMoEBlock(nn.Module):
         )
 
         # 专家1（V5 MoE使用）
-        # self.exp1 = nn.Sequential(
-        #     nn.Conv2d(dim, dim, 3, padding=1, groups=dim),
-        # )
         self.exp1 = nn.Sequential(
-            nn.Conv2d(dim, hidden_dim, 1),
-            nn.LeakyReLU(0.2, inplace=True),
-            BSConvU(hidden_dim, hidden_dim, 3, 1, 1),
-            # nn.Conv2d(hidden_dim, hidden_dim, 3, padding=1),
-            nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(hidden_dim, dim, 1),
+            nn.Conv2d(dim, dim, 3, padding=1, groups=dim),
         )
 
         # 专家2
         self.exp2 = nn.Sequential(
             nn.Conv2d(dim, hidden_dim, 1),
             nn.LeakyReLU(0.2, inplace=True),
-            # DSA(hidden_dim, 5, 3, 2, 1, dilation=1, group=hidden_dim),
-            BSConvU(hidden_dim, hidden_dim, 5, 2, 1),
-            # BSConvU(hidden_dim, hidden_dim, 3, 1, 1),（V5 MoE使用）
-            # nn.Conv2d(hidden_dim, hidden_dim, 5, padding=2),
+            BSConvU(hidden_dim, hidden_dim, 3, 1, 1),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Conv2d(hidden_dim, dim, 1),
         )
@@ -564,10 +553,7 @@ class MultiScaleMoEBlock(nn.Module):
         self.exp3 = nn.Sequential(
             nn.Conv2d(dim, hidden_dim, 1),
             nn.LeakyReLU(0.2, inplace=True),
-            # DSA(hidden_dim, 7, 5, 3, 1, dilation=1, group=hidden_dim),
-            BSConvU(hidden_dim, hidden_dim, 7, 3, 1),
-            # BSConvU(hidden_dim, hidden_dim, 5, 2, 1),（V5 MoE使用）
-            # nn.Conv2d(hidden_dim, hidden_dim, 7, padding=3),
+            BSConvU(hidden_dim, hidden_dim, 5, 2, 1),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Conv2d(hidden_dim, dim, 1)
         )
