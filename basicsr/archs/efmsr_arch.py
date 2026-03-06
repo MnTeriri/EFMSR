@@ -535,16 +535,20 @@ class MultiScaleMoEBlock(nn.Module):
             nn.Softmax(dim=1)
         )
 
-        # 专家1（V5 MoE使用）
+        # 专家1
         self.exp1 = nn.Sequential(
-            nn.Conv2d(dim, dim, 3, padding=1, groups=dim),
+            nn.Conv2d(dim, hidden_dim, 1),
+            nn.LeakyReLU(0.2, inplace=True),
+            BSConvU(hidden_dim, hidden_dim, 3, 1, 1),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(hidden_dim, dim, 1),
         )
 
         # 专家2
         self.exp2 = nn.Sequential(
             nn.Conv2d(dim, hidden_dim, 1),
             nn.LeakyReLU(0.2, inplace=True),
-            BSConvU(hidden_dim, hidden_dim, 3, 1, 1),
+            BSConvU(hidden_dim, hidden_dim, 5, 2, 1),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Conv2d(hidden_dim, dim, 1),
         )
@@ -553,7 +557,7 @@ class MultiScaleMoEBlock(nn.Module):
         self.exp3 = nn.Sequential(
             nn.Conv2d(dim, hidden_dim, 1),
             nn.LeakyReLU(0.2, inplace=True),
-            BSConvU(hidden_dim, hidden_dim, 5, 2, 1),
+            BSConvU(hidden_dim, hidden_dim, 7, 3, 1),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Conv2d(hidden_dim, dim, 1)
         )

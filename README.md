@@ -1,5 +1,6 @@
 # Enhanced Fourier-Mixture Transformer for High-Performance Image Super-Resolution (EFMSR), The Visual Computer
-[![DOI](https://zenodo.org/badge/1096864937.svg)](https://doi.org/10.5281/zenodo.17698834)
+
+[DOI](https://doi.org/10.1007/s00371-026-04401-5)
 
 ## Dependencies
 
